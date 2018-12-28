@@ -64,7 +64,7 @@ fun main(args: Array<String>) {
 
     var hexPerm = ""
 
-    for (i in 0 until  8){
+    for (i in 0 until 8){
 
         val str = xorRes.substring(i * 6, i * 6 + 6)
         val row = ("" + str[0] +  str[5]).toInt(2).toString(10).toInt()
@@ -76,14 +76,12 @@ fun main(args: Array<String>) {
 
     val binaryPerm = handleLeftZeros(Integer.toBinaryString(java.lang.Long.parseLong(hexPerm, 16).toInt()), 32)
 
-    var outExp = ""
-
-    for (i in 0 until 32)
-        outExp += binaryPerm[straight[i] - 1]
+    val outExp = permutation(straight.toIntArray(), binaryPerm)
 
     println(outExp.toBigInteger(2).toString(16).toUpperCase())
 
 }
+
 
 private fun getInput(inputHex: String) : String{
 
@@ -92,12 +90,7 @@ private fun getInput(inputHex: String) : String{
     val inputBinary2 = Integer.toBinaryString(java.lang.Long.parseLong(inputHex.substring(4, 8), 16).toInt())
     val inputBinary = handleLeftZeros(inputBinary1, 16) + handleLeftZeros(inputBinary2, 16)
 
-    var inputExp = ""
-
-    for (i in 0 until 48)
-        inputExp += inputBinary[expansion[i] - 1]
-
-    return inputExp
+    return permutation(expansion.toIntArray(), inputBinary)
 }
 
 private fun getKey(keyHex: String) : String{
@@ -111,15 +104,26 @@ private fun getKey(keyHex: String) : String{
 }
 
 private fun getXOR(input1: String, input2: String) : String {
+    val result = (input1.toBigInteger(2) xor input2.toBigInteger(2)).toString(2)
+    return handleLeftZeros(result, 48)
+}
 
-    val result = (input1.toBigInteger() xor input2.toBigInteger()).toString()
+private fun permutation(array: IntArray, input: String) : String {
 
-    var zeros = ""
+    var out = ""
+    var index = 1
+    for (i in array){
+        for (j in input){
+            if (i == index){
+                out += j
+                break
+            }
+            index++
+        }
+        index = 1
+    }
 
-    for (i in 0 until (48 - result.length))
-        zeros += "0"
-
-    return zeros + result
+    return out
 }
 
 private fun handleLeftZeros(string: String, length: Int) : String{
